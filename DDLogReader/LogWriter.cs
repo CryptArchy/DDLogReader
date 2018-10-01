@@ -28,9 +28,13 @@ namespace DDLogReader
             this.Writer = new StreamWriter(this.File);
         }
 
-        public async Task WriteFile(){
+        public async Task WriteFile(System.Threading.CancellationToken canceller){
             while (true) {
-                await Task.Delay(Rng.Next(this.Delay))
+                if (canceller.IsCancellationRequested) {
+                    break;
+                }
+
+                await Task.Delay(Rng.Next(this.Delay), canceller)
                         .ContinueWith(async (_) => {
                             await this.Writer.WriteLineAsync(RandomLogLine(this.Rng));
                             await this.Writer.FlushAsync();

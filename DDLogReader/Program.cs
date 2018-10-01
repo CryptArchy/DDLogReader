@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Linq;
 using System.Threading.Tasks;
 using McMaster.Extensions.CommandLineUtils;
 
@@ -49,9 +50,13 @@ namespace DDLogReader
             Console.WriteLine($"Demoing with {filename}");
             using(var g = new LogWriter(filename, delay))
             using(var p = new LogReader(filename)) {
-                var agg = new LogAggregator(p, maxLogsPerSec);
-                var tw = g.WriteFile();
-                var tr = p.ReadFile();
+                var aggregator = new LogAggregator(p, maxLogsPerSec);
+                aggregator.AggregateProcessed += (sender, agg) => WriteStatus(agg);
+                aggregator.AlertTriggered += (sender, agg) => WriteAlertTriggered(agg);
+                aggregator.AlertCancelled += (sender, agg) => WriteAlertCancelled(agg);
+                var cts = new System.Threading.CancellationTokenSource();
+                var tr = p.ReadFile(cts.Token);
+                var tw = g.WriteFile(cts.Token);
                 Task.WaitAll(tw, tr);
             }
         }
@@ -59,7 +64,8 @@ namespace DDLogReader
         private static void RunWriter(string filename, int delay) {
             Console.WriteLine($"Writing to {filename}");
             using(var g = new LogWriter(filename, delay)) {
-                var t = g.WriteFile();
+                var cts = new System.Threading.CancellationTokenSource();
+                var t = g.WriteFile(cts.Token);
                 t.Wait();
             }
         }
@@ -67,10 +73,33 @@ namespace DDLogReader
         private static void RunReader(string filename, int maxLogsPerSec) {
             Console.WriteLine($"Monitoring {filename}");
             using(var p = new LogReader(filename)) {
-                var agg = new LogAggregator(p, maxLogsPerSec);
-                var t = p.ReadFile();
-                t.Wait();
+                var aggregator = new LogAggregator(p, maxLogsPerSec);
+                aggregator.AggregateProcessed += (sender, agg) => WriteStatus(agg);
+                aggregator.AlertTriggered += (sender, agg) => WriteAlertTriggered(agg);
+                aggregator.AlertCancelled += (sender, agg) => WriteAlertCancelled(agg);
+
+                var cts = new System.Threading.CancellationTokenSource();
+                var t = p.ReadFile(cts.Token);
+                t.Wait(cts.Token);
             }
+        }
+
+        private static void WriteStatus(LogAggregate agg) {
+            Console.WriteLine($"Status Update - hits = {agg.RollingTotal} at {agg.Occurance}");
+            foreach(var kvp in agg.Counts.OrderByDescending(k => k.Value).ThenBy(k => k.Key.Length)) {
+                if (kvp.Value > 0) {
+                    Console.WriteLine($"{kvp.Key} : {kvp.Value}");
+                }
+            }
+            Console.WriteLine("--------------------------------------------------");
+        }
+
+        private static void WriteAlertTriggered(LogAggregate agg) {
+            Console.WriteLine($"High traffic generated an alert - hits = {agg.RollingTotal}, triggered at {agg.Occurance}");
+        }
+
+        private static void WriteAlertCancelled(LogAggregate agg) {
+            Console.WriteLine($"Traffic back to normal - hits = {agg.RollingTotal} at {agg.Occurance}");
         }
     }
 }
