@@ -45,6 +45,10 @@ test: build-test | $(DIR_TEST_RESULTS)
 .PHONY: clean
 clean:
 	@rm -rf $(DIR_BUILD)
+	@rm -rf DDLogReader/bin
+	@rm -rf DDLogReader/obj
+	@rm -rf Tests/bin
+	@rm -rf Tests/obj
 	docker rmi --force $(NAME)
 	docker rmi --force $(NAME):test
 
