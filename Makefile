@@ -61,7 +61,7 @@ writer: build
 .PHONY: build-test
 build-test: docker-build-test
 
-### Special Rules for Docker builds ###
+### Rules for Docker builds ###
 
 # Clean out all that old docker crud! Save harddrive space!
 .PHONY: docker-clean

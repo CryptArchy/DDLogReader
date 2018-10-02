@@ -103,28 +103,3 @@ namespace DDLogReader
         }
     }
 }
-
-/*
-
-Display stats every 10s about the traffic during those 10s: the sections of the web site with the most hits, as well as interesting summary statistics on the traffic as a whole. A section is defined as being what's before the second '/' in the path. For example, the section for "http://my.site.com/pages/create” is "http://my.site.com/pages".
-
-Make sure a user can keep the app running and monitor the log file continuously
-
-Whenever total traffic for the past 2 minutes exceeds a certain number on average, add a message saying that “High traffic generated an alert - hits = {value}, triggered at {time}”. The default threshold should be 10 requests per second and should be overridable.
-
-Whenever the total traffic drops again below that value on average for the past 2 minutes, print or displays another message detailing when the alert recovered.
-
-Write a test for the alerting logic.
-
-Explain how you’d improve on this application design.
-
-If you have access to a linux docker environment, we'd love to be able to docker build and run your project! If you don't though, don't sweat it. As an example:
-
-
-
-FROM python:3
-RUN touch /var/log/access.log # since the program will read this by default
-WORKDIR /usr/src
-ADD . /usr/src
-ENTRYPOINT ["python", "main.py"]
- */

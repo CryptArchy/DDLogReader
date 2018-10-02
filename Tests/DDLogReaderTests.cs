@@ -5,6 +5,9 @@ using DDLogReader;
 
 namespace Tests {
     public class DDLogReaderTests {
+        /// <summary>
+        /// Tests the LogLine regex parser
+        /// </summary>
         [Fact]
         public void TestLogLineParser() {
             var testLine = "127.0.0.1 - james [09/May/2018:16:00:39 +0000] \"GET /report HTTP/1.0\" 200 1234";
@@ -18,6 +21,9 @@ namespace Tests {
             Assert.Equal(1234L, ll.Size);
         }
 
+        /// <summary>
+        /// Tests the emission of aggregate events from the LogAggregator and the proper calculation of aggregate values.
+        /// </summary>
         [Fact]
         public void TestProcessingEvent() {
             var textreader = new StringReader(SampleLogString);
@@ -35,6 +41,9 @@ namespace Tests {
             Assert.True(processed);
         }
 
+        /// <summary>
+        /// Tests the emission of alert and return-to-normal events from the LogAggregator.
+        /// </summary>
         [Fact]
         public void TestAlertEvents() {
             var textreader = new StringReader(SampleLogString);

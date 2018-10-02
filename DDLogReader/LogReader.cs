@@ -5,6 +5,9 @@ using System.Timers;
 
 namespace DDLogReader
 {
+    /// <summary>
+    /// Reads a file in Common Log Format, parses it line by line, and emits events for each processed line.
+    /// </summary>
     public class LogReader : IDisposable {
         private FileStream File {get;set;}
         private TextReader Reader {get;set;}
@@ -12,6 +15,9 @@ namespace DDLogReader
         private Timer FlushTimer {get;set;}
         private bool IsDisposed {get;set;}
 
+        /// <summary>
+        /// A line from the log file has been parsed and is available.
+        /// </summary>
         public event EventHandler<LogLine> LogParsed;
 
         protected void OnLogParsed(LogLine line) => LogParsed?.Invoke(this, line);
@@ -44,6 +50,10 @@ namespace DDLogReader
             this.Reader = reader;
         }
 
+        /// <summary>
+        /// Initiates the log file monitor, which will run forever until cancelled.
+        /// </summary>
+        /// <param name="canceller">A CancellationToken which can be used to halt the file monitor.</param>
         public async Task ReadFile(System.Threading.CancellationToken canceller) {
             if (this.IsDisposed) {
                 throw new ObjectDisposedException(nameof(LogReader));
