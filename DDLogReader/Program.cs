@@ -9,7 +9,7 @@ namespace DDLogReader
         static int Main(string[] args) {
             var app = new CommandLineApplication
             {
-                Name = "Datadog Loggragator",
+                Name = "Loggragator",
                 Description = "An example utility for monitoring (and generating) simple log files.",
             };
 

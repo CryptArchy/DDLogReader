@@ -36,4 +36,4 @@ Special thanks to the community fork of [CommandLineUtils](https://github.com/na
 
 The Dockerfile and related techniques for containerizing dotnetcore code came from [the Microsoft dotnet-docker samples](https://github.com/dotnet/dotnet-docker).
 
-And a very special thanks to you, code reviewer at Datadog, for taking the time to read this and look at my code!
+And a very special thanks to you, for taking the time to read this and look at my code!
